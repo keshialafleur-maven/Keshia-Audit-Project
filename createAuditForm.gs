@@ -13,7 +13,34 @@ var FORM_DESCRIPTION =
   "Complete all applicable steps. Gated steps (🔒) = mark N/A if gate condition is not met. " +
   "Any single Fail = Overall Fail UNLESS it is explicitly a Feedback Only question.";
 
-// ─── ENTRY POINT ─────────────────────────────────────────────────────────────
+// ─── WEB APP ENTRY POINT ─────────────────────────────────────────────────────
+// Required when the script is deployed as a Web App (Deploy → New deployment → Web App).
+// On first visit it builds the form, stores its URL in Script Properties, then
+// redirects the browser straight to the live Google Form.
+
+function doGet() {
+  var props = PropertiesService.getScriptProperties();
+  var formUrl = props.getProperty("AUDIT_FORM_URL");
+
+  if (!formUrl) {
+    var form = createAuditForm();
+    formUrl = form.getPublishedUrl();
+    props.setProperty("AUDIT_FORM_URL", formUrl);
+  }
+
+  return HtmlService.createHtmlOutput(
+    '<html><head><meta http-equiv="refresh" content="0; url=' + formUrl + '"></head>' +
+    '<body><p>Redirecting to audit form… <a href="' + formUrl + '">click here if not redirected</a></p></body></html>'
+  );
+}
+
+// Call this from the Apps Script editor to wipe the cached URL and rebuild the form.
+function resetForm() {
+  PropertiesService.getScriptProperties().deleteProperty("AUDIT_FORM_URL");
+  createAuditForm();
+}
+
+// ─── FORM BUILDER ENTRY POINT ────────────────────────────────────────────────
 
 function createAuditForm() {
   var form = FormApp.create(FORM_TITLE);
