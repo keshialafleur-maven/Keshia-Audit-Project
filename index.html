@@ -14,15 +14,6 @@
       line-height: 1.5;
     }
 
-    .form-header {
-      background: #4a4a8a;
-      color: #fff;
-      padding: 28px 32px 20px;
-      border-radius: 8px 8px 0 0;
-    }
-    .form-header h1 { font-size: 1.6rem; margin-bottom: 6px; }
-    .form-header p  { font-size: 0.9rem; opacity: 0.85; }
-
     .form-wrap {
       max-width: 820px;
       margin: 0 auto 60px;
@@ -35,6 +26,16 @@
       margin-top: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,.12);
     }
+
+    /* form-header must come AFTER .card so its background wins */
+    .form-header {
+      background: #4a4a8a !important;
+      color: #fff !important;
+      padding: 28px 32px 20px;
+      border-radius: 8px 8px 0 0;
+    }
+    .form-header h1 { font-size: 1.6rem; margin-bottom: 6px; color: #fff !important; }
+    .form-header p  { font-size: 0.9rem; color: rgba(255,255,255,0.88) !important; }
 
     .section-title {
       font-size: 1.1rem;
@@ -188,9 +189,9 @@
 <div class="form-wrap">
 
   <!-- HEADER -->
-  <div class="card form-header">
-    <h1>📋 PI &amp; QA Non-MMB RR Audit</h1>
-    <p>Complete all applicable steps. Gated steps (🔒) — mark N/A if gate condition is not met.<br>
+  <div class="card form-header" style="background:#4a4a8a !important;color:#fff !important;">
+    <h1 style="color:#fff;">📋 PI &amp; QA Non-MMB RR Audit</h1>
+    <p style="color:rgba(255,255,255,0.88);">Complete all applicable steps. Gated steps (🔒) — mark N/A if gate condition is not met.<br>
        Any single Fail = Overall Fail <em>unless</em> it is explicitly a Feedback Only question.</p>
   </div>
 
