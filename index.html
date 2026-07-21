@@ -105,21 +105,29 @@
 
     .radio-group input, .checkbox-group input { margin-top: 2px; flex-shrink: 0; accent-color: #4a4a8a; }
 
-    input[type="text"], input[type="url"], textarea {
+    input[type="text"], input[type="url"], textarea, select {
       width: 100%;
       padding: 8px 12px;
       border: 1px solid #dadce0;
       border-radius: 4px;
       font-size: 0.9rem;
       color: #202124;
+      background: #fff;
       outline: none;
       transition: border 0.2s;
     }
-    input[type="text"]:focus, input[type="url"]:focus, textarea:focus {
+    input[type="text"]:focus, input[type="url"]:focus, textarea:focus, select:focus {
       border-color: #4a4a8a;
       box-shadow: 0 0 0 2px rgba(74,74,138,.15);
     }
     textarea { min-height: 80px; resize: vertical; }
+
+    select { cursor: pointer; max-width: 340px; }
+
+    /* Color-code selected score */
+    select.score-pass { border-color:#2e7d32; background:#e8f5e9; color:#1b5e20; font-weight:600; }
+    select.score-fail { border-color:#c62828; background:#ffebee; color:#b71c1c; font-weight:600; }
+    select.score-na   { border-color:#9e9e9e; background:#f5f5f5; color:#555; }
 
     .two-col {
       display: grid;
@@ -145,6 +153,35 @@
       margin-top: 8px;
     }
     .error-codes-box .q-label { color: #880e4f; font-size: 0.85rem; }
+
+    /* Collapsible multi-select for error codes */
+    details.ms {
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      max-width: 480px;
+    }
+    details.ms summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      color: #444;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    details.ms summary::-webkit-details-marker { display: none; }
+    details.ms summary::after { content: "▾"; color: #888; margin-left: 8px; }
+    details.ms[open] summary::after { content: "▴"; }
+    details.ms[open] summary { border-bottom: 1px solid #eee; }
+    details.ms .checkbox-group {
+      padding: 8px 6px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    details.ms summary.has-selection { color: #880e4f; font-weight: 600; }
 
     .verdict-pass  { color: #1b5e20; }
     .verdict-fail  { color: #b71c1c; }
@@ -262,47 +299,34 @@
       <div class="question">
         <label class="q-label">Q2 — Do both Admin and Alegeus show the member as Active?</label>
         <p class="help-text">A Termination Date in Alegeus that falls after the claim was processed = Pass.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s1q2" value="Pass"> Pass</label>
-          <label><input type="radio" name="s1q2" value="Fail"> Fail</label>
-          <label><input type="radio" name="s1q2" value="N/A"> N/A</label>
-        </div>
+        <select name="s1q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
 
       <div class="question">
         <label class="q-label">Q3 — In Alegeus, does the claim service date fall within the member's eligibility date, before the termination date?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s1q3" value="Pass"> Pass</label>
-          <label><input type="radio" name="s1q3" value="Fail"> Fail</label>
-          <label><input type="radio" name="s1q3" value="N/A"> N/A</label>
-        </div>
+        <select name="s1q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
 
       <div class="question">
         <label class="q-label">Q4 — Does the claim received date fall within the run-out period?</label>
         <p class="help-text">Run-out period varies by client (check PO) — some clients have none.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s1q4" value="Pass"> Pass</label>
-          <label><input type="radio" name="s1q4" value="Fail"> Fail</label>
-          <label><input type="radio" name="s1q4" value="N/A"> N/A</label>
-        </div>
+        <select name="s1q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
 
       <div class="overall-box">
         <label class="q-label">Step 1 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s1Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s1Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s1Overall" value="N/A — Sample Flagged for Replacement"> N/A — Sample Flagged for Replacement</label>
-        </div>
+        <select name="s1Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A — Sample Flagged for Replacement</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s1ErrorCodes" value="MEMBER_INACTIVE_IN_ADMIN_OR_ALEGEUS"> MEMBER_INACTIVE_IN_ADMIN_OR_ALEGEUS</label>
-          <label><input type="checkbox" name="s1ErrorCodes" value="SERVICE_DATE_OUTSIDE_ELIGIBILITY_WINDOW"> SERVICE_DATE_OUTSIDE_ELIGIBILITY_WINDOW</label>
-          <label><input type="checkbox" name="s1ErrorCodes" value="CLAIM_RECEIVED_OUTSIDE_RUN_OUT_PERIOD"> CLAIM_RECEIVED_OUTSIDE_RUN_OUT_PERIOD</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s1ErrorCodes" value="MEMBER_INACTIVE_IN_ADMIN_OR_ALEGEUS"> MEMBER_INACTIVE_IN_ADMIN_OR_ALEGEUS</label>
+            <label><input type="checkbox" name="s1ErrorCodes" value="SERVICE_DATE_OUTSIDE_ELIGIBILITY_WINDOW"> SERVICE_DATE_OUTSIDE_ELIGIBILITY_WINDOW</label>
+            <label><input type="checkbox" name="s1ErrorCodes" value="CLAIM_RECEIVED_OUTSIDE_RUN_OUT_PERIOD"> CLAIM_RECEIVED_OUTSIDE_RUN_OUT_PERIOD</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -314,41 +338,29 @@
       <div class="question">
         <label class="q-label">Q1 — Is the claimant listed as eligible (member or listed dependent) in Admin?</label>
         <p class="help-text">Per the client PO: Member Only or Covers Dependents (see Eligibility section).</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s2q1" value="Pass"> Pass</label>
-          <label><input type="radio" name="s2q1" value="Fail"> Fail</label>
-          <label><input type="radio" name="s2q1" value="N/A"> N/A</label>
-        </div>
+        <select name="s2q1" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q2 — Before denying a name mismatch, has the patient been confirmed in the Alegeus Dependents tab?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s2q2" value="Pass"> Pass</label>
-          <label><input type="radio" name="s2q2" value="Fail"> Fail</label>
-          <label><input type="radio" name="s2q2" value="N/A"> N/A</label>
-        </div>
+        <select name="s2q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q3 — Do the claimant names in Admin and Alegeus match exactly?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s2q3" value="Pass"> Pass</label>
-          <label><input type="radio" name="s2q3" value="Fail"> Fail</label>
-          <label><input type="radio" name="s2q3" value="N/A"> N/A</label>
-        </div>
+        <select name="s2q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="overall-box">
         <label class="q-label">Step 2 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s2Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s2Overall" value="Fail"> Fail</label>
-        </div>
+        <select name="s2Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s2ErrorCodes" value="CLAIMANT_NOT_ELIGIBLE"> CLAIMANT_NOT_ELIGIBLE</label>
-          <label><input type="checkbox" name="s2ErrorCodes" value="NAME_MISMATCH_ADMIN_ALEGEUS"> NAME_MISMATCH_ADMIN_ALEGEUS</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s2ErrorCodes" value="CLAIMANT_NOT_ELIGIBLE"> CLAIMANT_NOT_ELIGIBLE</label>
+            <label><input type="checkbox" name="s2ErrorCodes" value="NAME_MISMATCH_ADMIN_ALEGEUS"> NAME_MISMATCH_ADMIN_ALEGEUS</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -360,114 +372,79 @@
       <div class="question">
         <label class="q-label">Q1 — Is the date of service clearly present and legible on the documentation?</label>
         <p class="help-text">Date of Invoice is acceptable if the service date falls within the submission window.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q1" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q1" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q1" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q1" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q1b — Does the date of service fall within the member's active submission window?</label>
         <p class="help-text">Separate check from eligibility — confirm the allowed submission timeframe in client PO (e.g. 365 days).</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q1b" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q1b" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q1b" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q1b" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q2 — Is the provider name present on the documentation?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q2" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q2" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q2" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q2b 🔒 Access to Care — Is the provider an approved in-network (INN) clinic?</label>
         <p class="help-text">Gate: international client with "Access to Care" documented in PO. If OON, check the NERF Exception List in Audit SOP before marking Fail.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q2b" value="Pass — INN confirmed or NERF exception applies"> Pass — INN confirmed or NERF exception applies</label>
-          <label><input type="radio" name="s3q2b" value="Fail — OON & No NERF exception"> Fail — OON &amp; No NERF exception</label>
-          <label><input type="radio" name="s3q2b" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q2b" class="score">
+          <option value="">— Select —</option>
+          <option value="Pass — INN confirmed or NERF exception applies">Pass — INN confirmed or NERF exception applies</option>
+          <option value="Fail — OON &amp; No NERF exception">Fail — OON &amp; No NERF exception</option>
+          <option>N/A</option>
+        </select>
       </div>
       <div class="question">
         <label class="q-label">Q3 — Is the patient name present on the documentation?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q3" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q3" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q3" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q4 — Is a description of the service present and is the expense/service eligible?</label>
         <p class="help-text">If correctly denied for an ineligible service/expense, this is a Pass.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q4" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q4" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q4" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q5 — Does the claim amount match the amount on the documentation?</label>
         <p class="help-text">The RR can be for less than the documented amount. If the RR is for more, approve only UP TO the documented amount.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q5" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q5" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q5" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q5" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q6 — Is proof of payment present and is it not a prepayment?</label>
         <p class="help-text">Exception: Doula retainer/prepayment fees are eligible if no refund opportunity. MULTI-CYCLE PACKAGE: Conditions for refund must be met and member must provide clinic contract.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q6" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q6" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q6" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q6" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q7 — Was payment made with a non-HSA/FSA source?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q7" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q7" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q7" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q7" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="question">
         <label class="q-label">Q8 — Does Alegeus reflect the same documentation as Admin?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s3q8" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3q8" value="Fail"> Fail</label>
-          <label><input type="radio" name="s3q8" value="N/A"> N/A</label>
-        </div>
+        <select name="s3q8" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="overall-box">
         <label class="q-label">Step 3 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s3Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s3Overall" value="Fail"> Fail</label>
-        </div>
+        <select name="s3Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s3ErrorCodes" value="PROVIDER_NAME_MISSING"> PROVIDER_NAME_MISSING</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="DATE_OF_SERVICE_MISSING_OR_ILLEGIBLE"> DATE_OF_SERVICE_MISSING_OR_ILLEGIBLE</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="PATIENT_NAME_MISSING"> PATIENT_NAME_MISSING</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="SERVICE_DESCRIPTION_MISSING"> SERVICE_DESCRIPTION_MISSING</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="AMOUNT_MISSING_OR_MISMATCH"> AMOUNT_MISSING_OR_MISMATCH</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="PROOF_OF_SERVICE_DOCUMENT_MISSING"> PROOF_OF_SERVICE_DOCUMENT_MISSING</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="PROOF_OF_PAYMENT_MISSING"> PROOF_OF_PAYMENT_MISSING</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="PREPAY_SERVICE_NOT_YET_RENDERED"> PREPAY_SERVICE_NOT_YET_RENDERED</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="SUBMISSION_WINDOW_VIOLATION"> SUBMISSION_WINDOW_VIOLATION</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="UNREADABLE_DOCUMENTATION"> UNREADABLE_DOCUMENTATION</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="HSA_FSA_DOUBLE_DIP"> HSA_FSA_DOUBLE_DIP</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="DOC_MISMATCH_OR_MISSING_ALEGEUS"> DOC_MISMATCH_OR_MISSING_ALEGEUS</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="OON_CLINIC_NO_NERF_EXCEPTION"> OON_CLINIC_NO_NERF_EXCEPTION</label>
-          <label><input type="checkbox" name="s3ErrorCodes" value="NON_ELIGIBLE_EXPENSE_OR_SERVICE"> NON_ELIGIBLE_EXPENSE_OR_SERVICE</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s3ErrorCodes" value="PROVIDER_NAME_MISSING"> PROVIDER_NAME_MISSING</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="DATE_OF_SERVICE_MISSING_OR_ILLEGIBLE"> DATE_OF_SERVICE_MISSING_OR_ILLEGIBLE</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="PATIENT_NAME_MISSING"> PATIENT_NAME_MISSING</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="SERVICE_DESCRIPTION_MISSING"> SERVICE_DESCRIPTION_MISSING</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="AMOUNT_MISSING_OR_MISMATCH"> AMOUNT_MISSING_OR_MISMATCH</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="PROOF_OF_SERVICE_DOCUMENT_MISSING"> PROOF_OF_SERVICE_DOCUMENT_MISSING</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="PROOF_OF_PAYMENT_MISSING"> PROOF_OF_PAYMENT_MISSING</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="PREPAY_SERVICE_NOT_YET_RENDERED"> PREPAY_SERVICE_NOT_YET_RENDERED</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="SUBMISSION_WINDOW_VIOLATION"> SUBMISSION_WINDOW_VIOLATION</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="UNREADABLE_DOCUMENTATION"> UNREADABLE_DOCUMENTATION</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="HSA_FSA_DOUBLE_DIP"> HSA_FSA_DOUBLE_DIP</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="DOC_MISMATCH_OR_MISSING_ALEGEUS"> DOC_MISMATCH_OR_MISSING_ALEGEUS</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="OON_CLINIC_NO_NERF_EXCEPTION"> OON_CLINIC_NO_NERF_EXCEPTION</label>
+            <label><input type="checkbox" name="s3ErrorCodes" value="NON_ELIGIBLE_EXPENSE_OR_SERVICE"> NON_ELIGIBLE_EXPENSE_OR_SERVICE</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -485,47 +462,46 @@
         </div>
       </div>
       <div class="question"><label class="q-label">Q2 — Is the LMN uploaded, attached to this claim, and does Alegeus reflect the same document?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q2" value="Pass"> Pass</label><label><input type="radio" name="s4q2" value="Fail"> Fail</label></div></div>
+        <select name="s4q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q3 — Is the LMN signed by the patient/member?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q3" value="Pass"> Pass</label><label><input type="radio" name="s4q3" value="Fail"> Fail</label></div></div>
+        <select name="s4q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q4 — Is a medical condition/diagnosis documented on the LMN?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q4" value="Pass"> Pass</label><label><input type="radio" name="s4q4" value="Fail"> Fail</label></div></div>
+        <select name="s4q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q5 — Is a description of the recommended treatment documented on the LMN?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q5" value="Pass"> Pass</label><label><input type="radio" name="s4q5" value="Fail"> Fail</label></div></div>
+        <select name="s4q5" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q6 — If the claim is for supplements or equipment, are all items specifically named, itemized, and does reimbursement match?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q6" value="Pass"> Pass</label><label><input type="radio" name="s4q6" value="Fail"> Fail</label><label><input type="radio" name="s4q6" value="N/A"> N/A</label></div></div>
+        <select name="s4q6" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q7 — Does the LMN include explicit start and end treatment dates covering the claim's service date and within the Active Plan Year?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q7" value="Pass"> Pass</label><label><input type="radio" name="s4q7" value="Fail"> Fail</label></div></div>
+        <select name="s4q7" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q8 — Does the LMN describe how the treatment will alleviate the diagnosed condition?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q8" value="Pass"> Pass</label><label><input type="radio" name="s4q8" value="Fail"> Fail</label></div></div>
+        <select name="s4q8" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q9 — Is the provider's license number documented on the LMN?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q9" value="Pass"> Pass</label><label><input type="radio" name="s4q9" value="Fail"> Fail</label></div></div>
+        <select name="s4q9" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q10 — Is the LMN signed by a licensed provider?</label>
-        <div class="radio-group"><label><input type="radio" name="s4q10" value="Pass"> Pass</label><label><input type="radio" name="s4q10" value="Fail"> Fail</label></div></div>
+        <select name="s4q10" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
 
       <div class="overall-box">
         <label class="q-label">Step 4 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s4Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s4Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s4Overall" value="N/A"> N/A</label>
-        </div>
+        <select name="s4Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_REQUIRED_NOT_PROVIDED"> LMN_REQUIRED_NOT_PROVIDED</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_NOT_ATTACHED_IN_ADMIN_OR_ALEGEUS"> LMN_NOT_ATTACHED_IN_ADMIN_OR_ALEGEUS</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_PATIENT_SIGNATURE_MISSING"> LMN_PATIENT_SIGNATURE_MISSING</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_DIAGNOSIS_MISSING"> LMN_DIAGNOSIS_MISSING</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_TREATMENT_DESCRIPTION_MISSING"> LMN_TREATMENT_DESCRIPTION_MISSING</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_ITEMIZATION_MISSING_OR_INCOMPLETE"> LMN_ITEMIZATION_MISSING_OR_INCOMPLETE</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_DATES_OUTSIDE_ACTIVE_PLAN_YEAR"> LMN_DATES_OUTSIDE_ACTIVE_PLAN_YEAR</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_SERVICE_TREATMENT_DATES_MISSING"> LMN_SERVICE_TREATMENT_DATES_MISSING</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_ALLEVIATION_DESCRIPTION_MISSING"> LMN_ALLEVIATION_DESCRIPTION_MISSING</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_PROVIDER_LICENSE_NUMBER_MISSING"> LMN_PROVIDER_LICENSE_NUMBER_MISSING</label>
-          <label><input type="checkbox" name="s4ErrorCodes" value="LMN_UNSIGNED_OR_UNLICENSED_PROVIDER"> LMN_UNSIGNED_OR_UNLICENSED_PROVIDER</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_REQUIRED_NOT_PROVIDED"> LMN_REQUIRED_NOT_PROVIDED</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_NOT_ATTACHED_IN_ADMIN_OR_ALEGEUS"> LMN_NOT_ATTACHED_IN_ADMIN_OR_ALEGEUS</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_PATIENT_SIGNATURE_MISSING"> LMN_PATIENT_SIGNATURE_MISSING</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_DIAGNOSIS_MISSING"> LMN_DIAGNOSIS_MISSING</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_TREATMENT_DESCRIPTION_MISSING"> LMN_TREATMENT_DESCRIPTION_MISSING</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_ITEMIZATION_MISSING_OR_INCOMPLETE"> LMN_ITEMIZATION_MISSING_OR_INCOMPLETE</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_DATES_OUTSIDE_ACTIVE_PLAN_YEAR"> LMN_DATES_OUTSIDE_ACTIVE_PLAN_YEAR</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_SERVICE_TREATMENT_DATES_MISSING"> LMN_SERVICE_TREATMENT_DATES_MISSING</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_ALLEVIATION_DESCRIPTION_MISSING"> LMN_ALLEVIATION_DESCRIPTION_MISSING</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_PROVIDER_LICENSE_NUMBER_MISSING"> LMN_PROVIDER_LICENSE_NUMBER_MISSING</label>
+            <label><input type="checkbox" name="s4ErrorCodes" value="LMN_UNSIGNED_OR_UNLICENSED_PROVIDER"> LMN_UNSIGNED_OR_UNLICENSED_PROVIDER</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -535,33 +511,32 @@
       <div class="gate-note">Gate: Adoption, Surrogacy, or Donor claim. For detailed guidance refer to Client PO &amp; Audit SOP.</div>
 
       <div class="question"><label class="q-label">Q1 — Surrogacy: Is the required legal documentation present?</label>
-        <div class="radio-group"><label><input type="radio" name="s5q1" value="Pass"> Pass</label><label><input type="radio" name="s5q1" value="Fail"> Fail</label><label><input type="radio" name="s5q1" value="N/A"> N/A</label></div></div>
+        <select name="s5q1" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q2 — Adoption: Is the required legal documentation present?</label>
         <p class="help-text">Notarized decree or court order if finalization required; legal court docs if not.</p>
-        <div class="radio-group"><label><input type="radio" name="s5q2" value="Pass"> Pass</label><label><input type="radio" name="s5q2" value="Fail"> Fail</label><label><input type="radio" name="s5q2" value="N/A"> N/A</label></div></div>
+        <select name="s5q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q3 — Donor: Is the required legal documentation present?</label>
-        <div class="radio-group"><label><input type="radio" name="s5q3" value="Pass"> Pass</label><label><input type="radio" name="s5q3" value="Fail"> Fail</label><label><input type="radio" name="s5q3" value="N/A"> N/A</label></div></div>
+        <select name="s5q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q4 — Is the same legal document present in both Admin and Alegeus?</label>
-        <div class="radio-group"><label><input type="radio" name="s5q4" value="Pass"> Pass</label><label><input type="radio" name="s5q4" value="Fail"> Fail</label><label><input type="radio" name="s5q4" value="N/A"> N/A</label></div></div>
+        <select name="s5q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
 
       <div class="overall-box">
         <label class="q-label">Step 5 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s5Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s5Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s5Overall" value="N/A"> N/A</label>
-        </div>
+        <select name="s5Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s5ErrorCodes" value="LEGAL_DOC_MISSING_ADMIN"> LEGAL_DOC_MISSING_ADMIN</label>
-          <label><input type="checkbox" name="s5ErrorCodes" value="LEGAL_DOC_MISSING_ALEGEUS"> LEGAL_DOC_MISSING_ALEGEUS</label>
-          <label><input type="checkbox" name="s5ErrorCodes" value="WRONG_LEGAL_DOC_TYPE"> WRONG_LEGAL_DOC_TYPE</label>
-          <label><input type="checkbox" name="s5ErrorCodes" value="SURROGACY_AGENCY_CONTRACT_ONLY"> SURROGACY_AGENCY_CONTRACT_ONLY</label>
-          <label><input type="checkbox" name="s5ErrorCodes" value="ADOPTION_DOC_INSUFFICIENT"> ADOPTION_DOC_INSUFFICIENT</label>
-          <label><input type="checkbox" name="s5ErrorCodes" value="DONOR_AGREEMENT_MISSING"> DONOR_AGREEMENT_MISSING</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s5ErrorCodes" value="LEGAL_DOC_MISSING_ADMIN"> LEGAL_DOC_MISSING_ADMIN</label>
+            <label><input type="checkbox" name="s5ErrorCodes" value="LEGAL_DOC_MISSING_ALEGEUS"> LEGAL_DOC_MISSING_ALEGEUS</label>
+            <label><input type="checkbox" name="s5ErrorCodes" value="WRONG_LEGAL_DOC_TYPE"> WRONG_LEGAL_DOC_TYPE</label>
+            <label><input type="checkbox" name="s5ErrorCodes" value="SURROGACY_AGENCY_CONTRACT_ONLY"> SURROGACY_AGENCY_CONTRACT_ONLY</label>
+            <label><input type="checkbox" name="s5ErrorCodes" value="ADOPTION_DOC_INSUFFICIENT"> ADOPTION_DOC_INSUFFICIENT</label>
+            <label><input type="checkbox" name="s5ErrorCodes" value="DONOR_AGREEMENT_MISSING"> DONOR_AGREEMENT_MISSING</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -572,40 +547,39 @@
 
       <div class="question"><label class="q-label">Q1 — Does the member have an HDHP account in Admin?</label>
         <p class="help-text">Confirm Single or Family plan. In Alegeus, confirm Type = DTR and note Plan Dates.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s6q1" value="Pass — HDHP confirmed"> Pass — HDHP confirmed</label>
-          <label><input type="radio" name="s6q1" value="Fail"> Fail</label>
-          <label><input type="radio" name="s6q1" value="N/A — No DTR account"> N/A — No DTR account</label>
-        </div>
-      </div>
+        <select name="s6q1" class="score">
+          <option value="">— Select —</option>
+          <option value="Pass — HDHP confirmed">Pass — HDHP confirmed</option>
+          <option>Fail</option>
+          <option value="N/A — No DTR account">N/A — No DTR account</option>
+        </select></div>
       <div class="question"><label class="q-label">Q2 — Does the Annual Election amount in Alegeus match the IRS minimum for the applicable plan type and plan year?</label>
-        <div class="radio-group"><label><input type="radio" name="s6q2" value="Pass"> Pass</label><label><input type="radio" name="s6q2" value="Fail"> Fail</label></div></div>
+        <select name="s6q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q3 — Does the outcome of the reimbursement align with the member's current deductible standing (Disb YTD / Avail Balance) in Alegeus?</label>
-        <div class="radio-group"><label><input type="radio" name="s6q3" value="Pass"> Pass</label><label><input type="radio" name="s6q3" value="Fail"> Fail</label></div></div>
+        <select name="s6q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q4 — Does the approved amount in Admin reflect the correct outcome per Alegeus?</label>
-        <div class="radio-group"><label><input type="radio" name="s6q4" value="Pass"> Pass</label><label><input type="radio" name="s6q4" value="Fail"> Fail</label></div></div>
+        <select name="s6q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q5 — Does the claim sub-state match the DTR outcome?</label>
         <p class="help-text">Not met → APPROVED_NOT_PAYABLE · Met → APPROVED_PAYABLE</p>
-        <div class="radio-group"><label><input type="radio" name="s6q5" value="Pass"> Pass</label><label><input type="radio" name="s6q5" value="Fail"> Fail</label></div></div>
+        <select name="s6q5" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
 
       <div class="overall-box">
         <label class="q-label">Step 6 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s6Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s6Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s6Overall" value="N/A"> N/A</label>
-        </div>
+        <select name="s6Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s6ErrorCodes" value="NO_HDHP_ACCOUNT_ON_FILE"> NO_HDHP_ACCOUNT_ON_FILE</label>
-          <label><input type="checkbox" name="s6ErrorCodes" value="ANNUAL_ELECTION_AMOUNT_INCORRECT"> ANNUAL_ELECTION_AMOUNT_INCORRECT</label>
-          <label><input type="checkbox" name="s6ErrorCodes" value="REIMBURSEMENT_ISSUED_BEFORE_DEDUCTIBLE_MET"> REIMBURSEMENT_ISSUED_BEFORE_DEDUCTIBLE_MET</label>
-          <label><input type="checkbox" name="s6ErrorCodes" value="REIMBURSEMENT_WITHHELD_DESPITE_DEDUCTIBLE_MET"> REIMBURSEMENT_WITHHELD_DESPITE_DEDUCTIBLE_MET</label>
-          <label><input type="checkbox" name="s6ErrorCodes" value="APPROVED_AMOUNT_MISMATCH_ADMIN_ALEGEUS"> APPROVED_AMOUNT_MISMATCH_ADMIN_ALEGEUS</label>
-          <label><input type="checkbox" name="s6ErrorCodes" value="SUBSTATE_MISMATCH_DTR_OUTCOME"> SUBSTATE_MISMATCH_DTR_OUTCOME</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s6ErrorCodes" value="NO_HDHP_ACCOUNT_ON_FILE"> NO_HDHP_ACCOUNT_ON_FILE</label>
+            <label><input type="checkbox" name="s6ErrorCodes" value="ANNUAL_ELECTION_AMOUNT_INCORRECT"> ANNUAL_ELECTION_AMOUNT_INCORRECT</label>
+            <label><input type="checkbox" name="s6ErrorCodes" value="REIMBURSEMENT_ISSUED_BEFORE_DEDUCTIBLE_MET"> REIMBURSEMENT_ISSUED_BEFORE_DEDUCTIBLE_MET</label>
+            <label><input type="checkbox" name="s6ErrorCodes" value="REIMBURSEMENT_WITHHELD_DESPITE_DEDUCTIBLE_MET"> REIMBURSEMENT_WITHHELD_DESPITE_DEDUCTIBLE_MET</label>
+            <label><input type="checkbox" name="s6ErrorCodes" value="APPROVED_AMOUNT_MISMATCH_ADMIN_ALEGEUS"> APPROVED_AMOUNT_MISMATCH_ADMIN_ALEGEUS</label>
+            <label><input type="checkbox" name="s6ErrorCodes" value="SUBSTATE_MISMATCH_DTR_OUTCOME"> SUBSTATE_MISMATCH_DTR_OUTCOME</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -616,12 +590,12 @@
 
       <div class="question"><label class="q-label">Q1 — Is this a storage claim?</label>
         <p class="help-text">Check SCC code and documentation.</p>
-        <div class="radio-group">
-          <label><input type="radio" name="s7q1" value="Pass"> Pass</label>
-          <label><input type="radio" name="s7q1" value="Fail"> Fail</label>
-          <label><input type="radio" name="s7q1" value="N/A — Not a storage claim"> N/A — Not a storage claim</label>
-        </div>
-      </div>
+        <select name="s7q1" class="score">
+          <option value="">— Select —</option>
+          <option>Pass</option>
+          <option>Fail</option>
+          <option value="N/A — Not a storage claim">N/A — Not a storage claim</option>
+        </select></div>
       <div class="question"><label class="q-label">Q2 — Is this short-term or long-term storage?</label>
         <div class="radio-group">
           <label><input type="radio" name="s7q2" value="Short-term (Fertility — 1 year or less)"> Short-term (Fertility — 1 year or less)</label>
@@ -631,27 +605,26 @@
       </div>
       <div class="question"><label class="q-label">Q3 — Is the Storage Start Date correct? Do Admin and Alegeus match?</label>
         <p class="help-text">Past date representing start of storage period, not deposit date.</p>
-        <div class="radio-group"><label><input type="radio" name="s7q3" value="Pass"> Pass</label><label><input type="radio" name="s7q3" value="Fail"> Fail</label></div></div>
+        <select name="s7q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select></div>
       <div class="question"><label class="q-label">Q4 — If short-term storage and claim indicates period greater than 1 year, was pro-rating applied correctly?</label>
-        <div class="radio-group"><label><input type="radio" name="s7q4" value="Pass"> Pass</label><label><input type="radio" name="s7q4" value="Fail"> Fail</label><label><input type="radio" name="s7q4" value="N/A"> N/A</label></div></div>
+        <select name="s7q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
 
       <div class="overall-box">
         <label class="q-label">Step 7 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s7Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s7Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s7Overall" value="N/A"> N/A</label>
-        </div>
+        <select name="s7Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s7ErrorCodes" value="INCORRECT_STORAGE_START_DATE"> INCORRECT_STORAGE_START_DATE</label>
-          <label><input type="checkbox" name="s7ErrorCodes" value="PRO_RATE_INCORRECT_OR_NOT_APPLIED"> PRO_RATE_INCORRECT_OR_NOT_APPLIED</label>
-          <label><input type="checkbox" name="s7ErrorCodes" value="STORAGE_DETAILS_MISMATCH_ADMIN_ALEGEUS"> STORAGE_DETAILS_MISMATCH_ADMIN_ALEGEUS</label>
-          <label><input type="checkbox" name="s7ErrorCodes" value="STORAGE_TYPE_NOT_COVERED"> STORAGE_TYPE_NOT_COVERED</label>
-          <label><input type="checkbox" name="s7ErrorCodes" value="STORAGE_DATE_OUTSIDE_COVERAGE_PERIOD"> STORAGE_DATE_OUTSIDE_COVERAGE_PERIOD</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s7ErrorCodes" value="INCORRECT_STORAGE_START_DATE"> INCORRECT_STORAGE_START_DATE</label>
+            <label><input type="checkbox" name="s7ErrorCodes" value="PRO_RATE_INCORRECT_OR_NOT_APPLIED"> PRO_RATE_INCORRECT_OR_NOT_APPLIED</label>
+            <label><input type="checkbox" name="s7ErrorCodes" value="STORAGE_DETAILS_MISMATCH_ADMIN_ALEGEUS"> STORAGE_DETAILS_MISMATCH_ADMIN_ALEGEUS</label>
+            <label><input type="checkbox" name="s7ErrorCodes" value="STORAGE_TYPE_NOT_COVERED"> STORAGE_TYPE_NOT_COVERED</label>
+            <label><input type="checkbox" name="s7ErrorCodes" value="STORAGE_DATE_OUTSIDE_COVERAGE_PERIOD"> STORAGE_DATE_OUTSIDE_COVERAGE_PERIOD</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -661,36 +634,36 @@
 
       <div class="question"><label class="q-label">Q1 — Is the expense type eligible in the client Program Overview, and do Admin and Alegeus reflect the same expense type?</label>
         <p class="help-text">FERTILITY MONITORING 6-WEEK WINDOW applies.</p>
-        <div class="radio-group"><label><input type="radio" name="s8q1" value="Pass"> Pass</label><label><input type="radio" name="s8q1" value="Fail"> Fail</label><label><input type="radio" name="s8q1" value="N/A"> N/A</label></div></div>
+        <select name="s8q1" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q2 — Was the correct account bucket applied?</label>
         <p class="help-text">Some clients have more than one wallet bucket. COBRA: only HRA eligible expenses.</p>
-        <div class="radio-group"><label><input type="radio" name="s8q2" value="Pass"> Pass</label><label><input type="radio" name="s8q2" value="Fail"> Fail</label><label><input type="radio" name="s8q2" value="N/A"> N/A</label></div></div>
+        <select name="s8q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q3 — Do the wallet dollar amounts in Admin and Alegeus match the approved benefit amounts in the client's Program Overview?</label>
-        <div class="radio-group"><label><input type="radio" name="s8q3" value="Pass"> Pass</label><label><input type="radio" name="s8q3" value="Fail"> Fail</label><label><input type="radio" name="s8q3" value="N/A"> N/A</label></div></div>
+        <select name="s8q3" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q4 — Has the correct SCC been applied in Admin, and does Alegeus reflect a consistent determination?</label>
-        <div class="radio-group"><label><input type="radio" name="s8q4" value="Pass"> Pass</label><label><input type="radio" name="s8q4" value="Fail"> Fail</label><label><input type="radio" name="s8q4" value="N/A"> N/A</label></div></div>
+        <select name="s8q4" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q5 — International claims only: Does the converted USD amount appear reasonable and consistent with the submitted foreign currency amount?</label>
-        <div class="radio-group"><label><input type="radio" name="s8q5" value="Pass"> Pass</label><label><input type="radio" name="s8q5" value="Fail"> Fail</label><label><input type="radio" name="s8q5" value="N/A"> N/A</label></div></div>
+        <select name="s8q5" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
 
       <div class="overall-box">
         <label class="q-label">Step 8 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s8Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s8Overall" value="Fail"> Fail</label>
-        </div>
+        <select name="s8Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s8ErrorCodes" value="INELIGIBLE_EXPENSE_APPROVED"> INELIGIBLE_EXPENSE_APPROVED</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="ELIGIBLE_EXPENSE_DENIED"> ELIGIBLE_EXPENSE_DENIED</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="WRONG_ACCOUNT_BUCKET"> WRONG_ACCOUNT_BUCKET</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="COBRA_INELIGIBLE_EXPENSE_APPROVED"> COBRA_INELIGIBLE_EXPENSE_APPROVED</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="WALLET_AMOUNT_MISMATCH_ADMIN_ALEGEUS_OR_PO"> WALLET_AMOUNT_MISMATCH_ADMIN_ALEGEUS_OR_PO</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="SCC_CODE_INCORRECT_OR_MISSING_ADMIN_OR_ALEGEUS"> SCC_CODE_INCORRECT_OR_MISSING_ADMIN_OR_ALEGEUS</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="EXPENSE_TYPE_INCORRECT_ADMIN_OR_ALEGEUS"> EXPENSE_TYPE_INCORRECT_ADMIN_OR_ALEGEUS</label>
-          <label><input type="checkbox" name="s8ErrorCodes" value="GLOBAL_RATE_CONVERSION_DISCREPANCY"> GLOBAL_RATE_CONVERSION_DISCREPANCY</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s8ErrorCodes" value="INELIGIBLE_EXPENSE_APPROVED"> INELIGIBLE_EXPENSE_APPROVED</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="ELIGIBLE_EXPENSE_DENIED"> ELIGIBLE_EXPENSE_DENIED</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="WRONG_ACCOUNT_BUCKET"> WRONG_ACCOUNT_BUCKET</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="COBRA_INELIGIBLE_EXPENSE_APPROVED"> COBRA_INELIGIBLE_EXPENSE_APPROVED</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="WALLET_AMOUNT_MISMATCH_ADMIN_ALEGEUS_OR_PO"> WALLET_AMOUNT_MISMATCH_ADMIN_ALEGEUS_OR_PO</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="SCC_CODE_INCORRECT_OR_MISSING_ADMIN_OR_ALEGEUS"> SCC_CODE_INCORRECT_OR_MISSING_ADMIN_OR_ALEGEUS</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="EXPENSE_TYPE_INCORRECT_ADMIN_OR_ALEGEUS"> EXPENSE_TYPE_INCORRECT_ADMIN_OR_ALEGEUS</label>
+            <label><input type="checkbox" name="s8ErrorCodes" value="GLOBAL_RATE_CONVERSION_DISCREPANCY"> GLOBAL_RATE_CONVERSION_DISCREPANCY</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -700,7 +673,7 @@
 
       <div class="question"><label class="q-label">Q1 — Was the claim approved or denied accurately?</label>
         <p class="help-text">System: Admin/Alegeus</p>
-        <div class="radio-group"><label><input type="radio" name="s9q1" value="Pass"> Pass</label><label><input type="radio" name="s9q1" value="Fail"> Fail</label><label><input type="radio" name="s9q1" value="N/A"> N/A</label></div></div>
+        <select name="s9q1" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
 
       <hr class="divider">
       <p style="font-weight:600;font-size:.9rem;margin-bottom:12px;">📌 Scorecard Entry — Claim Dollar Details <span style="font-weight:400;color:#666">(copy these four values to the Audit Record Details at the top)</span></p>
@@ -723,19 +696,18 @@
 
       <div class="overall-box">
         <label class="q-label">Step 9 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s9Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s9Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s9Overall" value="Feedback Only"> Feedback Only</label>
-        </div>
+        <select name="s9Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>Feedback Only</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s9ErrorCodes" value="CLAIM_APPROVED_INCORRECTLY"> CLAIM_APPROVED_INCORRECTLY</label>
-          <label><input type="checkbox" name="s9ErrorCodes" value="CLAIM_DENIED_INCORRECTLY"> CLAIM_DENIED_INCORRECTLY</label>
-          <label><input type="checkbox" name="s9ErrorCodes" value="CLAIM_APPROVAL_OR_DENIAL_MISMATCH_ADMIN_ALEGEUS"> CLAIM_APPROVAL_OR_DENIAL_MISMATCH_ADMIN_ALEGEUS</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s9ErrorCodes" value="CLAIM_APPROVED_INCORRECTLY"> CLAIM_APPROVED_INCORRECTLY</label>
+            <label><input type="checkbox" name="s9ErrorCodes" value="CLAIM_DENIED_INCORRECTLY"> CLAIM_DENIED_INCORRECTLY</label>
+            <label><input type="checkbox" name="s9ErrorCodes" value="CLAIM_APPROVAL_OR_DENIAL_MISMATCH_ADMIN_ALEGEUS"> CLAIM_APPROVAL_OR_DENIAL_MISMATCH_ADMIN_ALEGEUS</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -745,7 +717,7 @@
       <p class="help-text">Check Audit SOP for Valid Sub-States.</p>
 
       <div class="question"><label class="q-label">Q1 — Does the closing sub-state match the claim outcome?</label>
-        <div class="radio-group"><label><input type="radio" name="s10q1" value="Pass"> Pass</label><label><input type="radio" name="s10q1" value="Fail"> Fail</label><label><input type="radio" name="s10q1" value="N/A"> N/A</label></div></div>
+        <select name="s10q1" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
       <div class="question"><label class="q-label">Q2 — If APPROVED_PAYABLE, has it ultimately reached REIMBURSED_TO_MEMBER?</label>
         <div class="radio-group">
           <label><input type="radio" name="s10q2" value="Pass"> Pass</label>
@@ -756,16 +728,16 @@
 
       <div class="overall-box">
         <label class="q-label">Step 10 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s10Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s10Overall" value="Fail"> Fail</label>
-        </div>
+        <select name="s10Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s10ErrorCodes" value="SUBSTATE_INCORRECT"> SUBSTATE_INCORRECT</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s10ErrorCodes" value="SUBSTATE_INCORRECT"> SUBSTATE_INCORRECT</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -783,22 +755,21 @@
         </div>
       </div>
       <div class="question"><label class="q-label">Q2 — Does this claim reflect the correct reimbursement method in both Admin and Alegeus?</label>
-        <div class="radio-group"><label><input type="radio" name="s11q2" value="Pass"> Pass</label><label><input type="radio" name="s11q2" value="Fail"> Fail</label><label><input type="radio" name="s11q2" value="N/A"> N/A</label></div></div>
+        <select name="s11q2" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select></div>
 
       <div class="overall-box">
         <label class="q-label">Step 11 Overall</label>
-        <div class="radio-group">
-          <label><input type="radio" name="s11Overall" value="Pass"> Pass</label>
-          <label><input type="radio" name="s11Overall" value="Fail"> Fail</label>
-          <label><input type="radio" name="s11Overall" value="N/A"> N/A</label>
-        </div>
+        <select name="s11Overall" class="score"><option value="">— Select —</option><option>Pass</option><option>Fail</option><option>N/A</option></select>
       </div>
       <div class="error-codes-box">
-        <label class="q-label">Error Codes (check all that apply)</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="s11ErrorCodes" value="FUNDING_TYPE_MISMATCH_ADMIN_ALEGEUS"> FUNDING_TYPE_MISMATCH_ADMIN_ALEGEUS</label>
-          <label><input type="checkbox" name="s11ErrorCodes" value="FUNDING_TYPE_CONFIGURED_INCORRECTLY_IN_ADMIN"> FUNDING_TYPE_CONFIGURED_INCORRECTLY_IN_ADMIN</label>
-        </div>
+        <label class="q-label">Error Codes (select all that apply)</label>
+        <details class="ms">
+          <summary>Select error code(s)…</summary>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="s11ErrorCodes" value="FUNDING_TYPE_MISMATCH_ADMIN_ALEGEUS"> FUNDING_TYPE_MISMATCH_ADMIN_ALEGEUS</label>
+            <label><input type="checkbox" name="s11ErrorCodes" value="FUNDING_TYPE_CONFIGURED_INCORRECTLY_IN_ADMIN"> FUNDING_TYPE_CONFIGURED_INCORRECTLY_IN_ADMIN</label>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -850,6 +821,39 @@
 </div>
 
 <script>
+  // ── Color-code score dropdowns as they're selected ──
+  document.querySelectorAll("select.score").forEach(function(sel) {
+    sel.addEventListener("change", function() {
+      sel.classList.remove("score-pass", "score-fail", "score-na");
+      var v = sel.value;
+      if (v.indexOf("Pass") === 0) sel.classList.add("score-pass");
+      else if (v.indexOf("Fail") === 0) sel.classList.add("score-fail");
+      else if (v.indexOf("N/A") === 0) sel.classList.add("score-na");
+    });
+  });
+
+  // ── Update multi-select summaries to show selection count ──
+  document.querySelectorAll("details.ms").forEach(function(det) {
+    var summary = det.querySelector("summary");
+    var boxes = det.querySelectorAll('input[type="checkbox"]');
+    function refresh() {
+      var checked = [];
+      boxes.forEach(function(b) { if (b.checked) checked.push(b.value); });
+      if (checked.length === 0) {
+        summary.textContent = "Select error code(s)…";
+        summary.classList.remove("has-selection");
+      } else if (checked.length === 1) {
+        summary.textContent = checked[0];
+        summary.classList.add("has-selection");
+      } else {
+        summary.textContent = checked.length + " error codes selected";
+        summary.classList.add("has-selection");
+      }
+    }
+    boxes.forEach(function(b) { b.addEventListener("change", refresh); });
+  });
+
+  // ── Submit handler ──
   document.getElementById("auditForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -871,6 +875,13 @@
           msg.innerHTML = "✅ Audit submitted successfully! " +
             (result.sheetUrl ? '<a href="' + result.sheetUrl + '" target="_blank">View responses sheet</a>' : "");
           document.getElementById("auditForm").reset();
+          document.querySelectorAll("select.score").forEach(function(sel) {
+            sel.classList.remove("score-pass", "score-fail", "score-na");
+          });
+          document.querySelectorAll("details.ms summary").forEach(function(s) {
+            s.textContent = "Select error code(s)…";
+            s.classList.remove("has-selection");
+          });
           window.scrollTo({top: 0, behavior: "smooth"});
         } else {
           msg.className = "error";
@@ -890,7 +901,7 @@
     var form = document.getElementById("auditForm");
     var d = {};
 
-    // Text / url inputs
+    // Text / url inputs and textareas
     ["rrId","walletId","memberUserId","alegeusId","client","orgId","walletType",
      "claimAmount","totalPaidAmount","correctPaidAmount","totalErroredDollars","overUnder",
      "populationMonth","auditMonth","adminLink","auditor","auditDate",
@@ -902,7 +913,8 @@
       d[n] = el ? el.value : "";
     });
 
-    // Radio buttons
+    // Dropdowns and radio groups — .value works for both a <select>
+    // and a RadioNodeList (returns the checked radio's value, or "")
     ["auditType","feedbackOnly","overallVerdict",
      "s1q1","s1q2","s1q3","s1q4","s1Overall",
      "s2q1","s2q2","s2q3","s2Overall",
@@ -917,12 +929,7 @@
      "s11q1","s11q2","s11Overall"
     ].forEach(function(n) {
       var els = form.elements[n];
-      d[n] = "";
-      if (els) {
-        for (var i = 0; i < els.length; i++) {
-          if (els[i].checked) { d[n] = els[i].value; break; }
-        }
-      }
+      d[n] = (els && els.value !== undefined) ? els.value : "";
     });
 
     // Checkboxes (multi-select)
